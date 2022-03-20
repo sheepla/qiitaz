@@ -6,10 +6,6 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-const (
-	baseURL = "https://qiita.com"
-)
-
 type Result struct {
 	Header  string `qoquery:"div.searchResult_header,text" json:"header"`
 	Title   string `qoquery:"h1.searchResult_itemTitle a,text" json:"title"`
