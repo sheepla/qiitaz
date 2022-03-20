@@ -15,14 +15,23 @@ type Result struct {
 	// Likes   string   `qoquery:"ul.searchResult_statusList li,text" json:"likes"`
 }
 
-func NewURL(query string, sortby string) string {
+type SortBy string
+
+const (
+	Created SortBy = "created"
+	Like    SortBy = "like"
+	Stock   SortBy = "stock"
+	Rel     SortBy = "rel"
+)
+
+func NewURL(query string, sortby SortBy) string {
 	u := &url.URL{}
 	u.Scheme = "https"
 	u.Host = "qiita.com"
 	u.Path = "search"
 	q := u.Query()
 	q.Set("q", query)
-	q.Set("sort", sortby)
+	q.Set("sort", string(sortby))
 	u.RawQuery = q.Encode()
 	return u.String()
 }

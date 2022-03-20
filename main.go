@@ -5,36 +5,96 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/sheepla/qiitaz/client"
 	"github.com/toqueteos/webbrowser"
 )
 
 const (
+	appName    = "qiitaz"
+	appVersion = "0.0.1"
+	appUsage   = "[OPTIONS] QUERY..."
+)
+
+const (
 	baseURL = "https://qiita.com"
 )
 
+type exitCode int
+
+type options struct {
+	Version bool `short:"V" long:"version" description:"Show version"`
+	// SortBy  string `short:"s" long:"sort" description:"Sort key to search e.g. created, like, stock, rel,  (default: \"rel\")" `
+	Open bool `short:"o" long:"open" description:"Open URL in your web browser"`
+}
+
+const (
+	exitCodeOK exitCode = iota
+	exitCodeErrArgs
+	exitCodeErrRequest
+	exitCodeErrFuzzyFinder
+	exitCodeErrWebbrowser
+)
+
 func main() {
-	url := client.NewURL(os.Args[1], "like")
+	os.Exit(int(Main(os.Args[1:])))
+}
+
+func Main(cliArgs []string) exitCode {
+	var opts options
+	parser := flags.NewParser(&opts, flags.Default)
+	parser.Name = appName
+	parser.Usage = appUsage
+
+	args, err := parser.ParseArgs(cliArgs)
+	if err != nil {
+		if flags.WroteHelp(err) {
+			return exitCodeOK
+		} else {
+			fmt.Fprintf(os.Stderr, "Argument parsing failed: %s", err)
+			return exitCodeErrArgs
+		}
+	}
+
+	if opts.Version {
+		fmt.Printf("%s: v%s\n", appName, appVersion)
+		return exitCodeOK
+	}
+
+	if len(args) == 0 {
+		fmt.Fprintln(os.Stderr, "Must require argument (s)")
+		return exitCodeErrArgs
+	}
+
+	url := client.NewURL(strings.Join(args, " "), client.Rel)
 	result, err := client.Get(url)
 	if err != nil {
 		log.Println(err)
+		return exitCodeErrRequest
 	}
 
 	choices, err := find(result)
 	if err != nil {
 		log.Println(err)
+		return exitCodeErrFuzzyFinder
 	}
 
 	for _, idx := range choices {
 		url := path.Join(baseURL, result[idx].Link)
-		if err := webbrowser.Open(url); err != nil {
-			log.Println(err)
+		if opts.Open {
+			if err := webbrowser.Open(url); err != nil {
+				log.Println(err)
+				return exitCodeErrWebbrowser
+			}
 		} else {
 			fmt.Println(url)
 		}
 	}
+
+	return exitCodeOK
 }
 
 func find(result []client.Result) ([]int, error) {
