@@ -1,6 +1,7 @@
 package client
 
 import (
+	"net/http"
 	"net/url"
 
 	"github.com/PuerkitoBio/goquery"
@@ -37,7 +38,12 @@ func NewURL(query string, sortby SortBy) string {
 }
 
 func Get(url string) ([]Result, error) {
-	doc, err := goquery.NewDocument(url)
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		return nil, err
 	}
