@@ -31,16 +31,21 @@ Help Options:
 
 ## Installation
 
-## Build from Source
+### Build from Source
 
 Clone this repository then run `go install`.
 Requires Go, testing on `v1.17.8 linux/amd64`
 
-## Download Executable Binary
+### Download Executable Binary
 
 > [Latest Release](https://github.com/sheepla/qiitaz/releases/latest)
 
 ## LICENSE
 
 [MIT](./LICENSE)
+
+## Related Projects
+
+- [sheepla/fzwiki](https://github.com/sheepla/fzwiki)
+- [sheepla/fzenn](https://github.com/sheepla/fzenn)
 
