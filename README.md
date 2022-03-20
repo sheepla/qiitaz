@@ -12,6 +12,7 @@
 -->
 
 </div>
+
 # qiitaz
 
 A command line [Qiita](https://qiita.com) searcher with fuzzyfinder UI
@@ -33,7 +34,7 @@ Help Options:
 ## Installation
 
 Clone this repository then run `go install`.
-Requires Go `v1.17.8`, testing on `linux/amd64`
+Requires Go, testing on `v1.17.8 linux/amd64`
 
 ## LICENSE
 
