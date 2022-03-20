@@ -27,7 +27,7 @@ type exitCode int
 
 type options struct {
 	Version bool          `short:"V" long:"version" description:"Show version"`
-	Sort    client.SortBy `short:"s" long:"sort" description:"Sort key to search e.g. created, like, stock, rel,  (default: \"rel\")" `
+	Sort    client.SortBy `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
 	Open    bool          `short:"o" long:"open" description:"Open URL in your web browser"`
 }
 
