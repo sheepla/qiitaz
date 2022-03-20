@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -18,14 +19,26 @@ type Result struct {
 
 type SortBy string
 
-const (
-	Created SortBy = "created"
-	Like    SortBy = "like"
-	Stock   SortBy = "stock"
-	Rel     SortBy = "rel"
-)
+func (s SortBy) varidate() bool {
+	switch s {
+	case "like":
+		return true
+	case "stock":
+		return true
+	case "rel":
+		return true
+	case "created":
+		return true
+	default:
+		return false
+	}
+}
 
-func NewURL(query string, sortby SortBy) string {
+func NewURL(query string, sortby SortBy) (string, error) {
+	if !sortby.varidate() {
+		return "", fmt.Errorf("invalid sort key: %s", sortby)
+	}
+
 	u := &url.URL{}
 	u.Scheme = "https"
 	u.Host = "qiita.com"
@@ -34,7 +47,7 @@ func NewURL(query string, sortby SortBy) string {
 	q.Set("q", query)
 	q.Set("sort", string(sortby))
 	u.RawQuery = q.Encode()
-	return u.String()
+	return u.String(), nil
 }
 
 func Get(url string) ([]Result, error) {
