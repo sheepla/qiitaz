@@ -11,9 +11,17 @@
 
 </div>
 
+<div align="center">
+
 # qiitaz
 
+</div>
+
+<div align="center">
+
 A command line [Qiita](https://qiita.com) searcher with fuzzyfinder UI
+
+</div>
 
 ## Usage
 
