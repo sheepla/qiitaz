@@ -31,6 +31,8 @@ Usage:
 
 Application Options:
   -V, --version  Show version
+  -s, --sort=    Sort key to search e.g. "created", "like", "stock", "rel",
+                 (default: "rel")
   -o, --open     Open URL in your web browser
 
 Help Options:
