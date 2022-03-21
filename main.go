@@ -26,9 +26,9 @@ const (
 type exitCode int
 
 type options struct {
-	Version bool          `short:"V" long:"version" description:"Show version"`
-	Sort    client.SortBy `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
-	Open    bool          `short:"o" long:"open" description:"Open URL in your web browser"`
+	Version bool   `short:"V" long:"version" description:"Show version"`
+	Sort    string `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
+	Open    bool   `short:"o" long:"open" description:"Open URL in your web browser"`
 }
 
 const (
@@ -69,7 +69,11 @@ func Main(cliArgs []string) exitCode {
 		return exitCodeErrArgs
 	}
 
-	url, err := client.NewURL(strings.Join(args, " "), opts.Sort)
+	sortby := "rel"
+	if opts.Sort != "" {
+		sortby = opts.Sort
+	}
+	url, err := client.NewURL(strings.Join(args, " "), client.SortBy(sortby))
 	if err != nil {
 		log.Println(err)
 		return exitCodeErrArgs
