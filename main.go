@@ -116,7 +116,12 @@ func find(result []client.Result) ([]int, error) {
 			if i == -1 {
 				return ""
 			}
-			return fmt.Sprintf("%s\n\n%s\n\n%s", result[i].Header, result[i].Title, result[i].Snippet)
+			return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
+				result[i].Header,
+				result[i].Title,
+				result[i].Snippet,
+				strings.Join(result[i].Tags, " "),
+			)
 		}),
 	)
 }
