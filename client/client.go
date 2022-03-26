@@ -2,10 +2,12 @@ package client
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/charmbracelet/glamour"
 )
 
 type Result struct {
@@ -33,7 +35,7 @@ func (s SortBy) varidate() bool {
 	}
 }
 
-func NewURL(query string, sortby SortBy) (string, error) {
+func NewSearchURL(query string, sortby SortBy) (string, error) {
 	if !sortby.varidate() {
 		return "", fmt.Errorf("invalid sort key: %s", sortby)
 	}
@@ -50,7 +52,7 @@ func NewURL(query string, sortby SortBy) (string, error) {
 	return u.String(), nil
 }
 
-func Get(url string) ([]Result, error) {
+func Search(url string) ([]Result, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -78,4 +80,30 @@ func Get(url string) ([]Result, error) {
 	})
 
 	return results, err
+}
+
+func NewPageURL(path string) string {
+	u := &url.URL{
+		Scheme: "https",
+		Host:   "qiita.com",
+		Path:   path,
+	}
+	return u.String()
+}
+
+func Preview(url, style string) (*string, error) {
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	view, err := glamour.Render(string(body), style)
+	if err != nil {
+		return nil, err
+	}
+	return &view, nil
 }
