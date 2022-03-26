@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/jessevdk/go-flags"
 	"github.com/ktr0731/go-fuzzyfinder"
+	"github.com/mattn/go-colorable"
 	"github.com/sheepla/qiitaz/client"
 	"github.com/toqueteos/webbrowser"
 )
@@ -88,7 +88,7 @@ func Main(cliArgs []string) exitCode {
 
 	if opts.Open {
 		for _, idx := range choices {
-			url := path.Join(baseURL, result[idx].Link)
+			url := client.NewPageURL(result[idx].Link)
 			if err := webbrowser.Open(url); err != nil {
 				log.Println(err)
 				return exitCodeErrWebbrowser
@@ -104,7 +104,7 @@ func Main(cliArgs []string) exitCode {
 				log.Println(err)
 				return exitCodeErrPreview
 			}
-			fmt.Fprintf(os.Stdout, *view)
+			fmt.Fprintf(colorable.NewColorableStdout(), *view)
 		}
 	}
 
