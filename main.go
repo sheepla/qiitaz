@@ -19,10 +19,6 @@ const (
 	appUsage   = "[OPTIONS] QUERY..."
 )
 
-const (
-	baseURL = "https://qiita.com"
-)
-
 type exitCode int
 
 type options struct {
