@@ -19,7 +19,7 @@
 
 <div align="center">
 
-[Qiita](https://qiita.com)の記事を検索・ターミナル上でプレビューできるコマンドラインツール
+[Qiita](https://qiita.com)の記事を素早く検索・ターミナル上でプレビューできるコマンドラインツール
 
 </div>
 
