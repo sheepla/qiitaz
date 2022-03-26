@@ -30,6 +30,7 @@ type options struct {
 	Sort    string `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
 	Open    bool   `short:"o" long:"open" description:"Open URL in your web browser"`
 	Preview bool   `short:"p" long:"preview" description:"Preview page on your terminal"`
+	PageNo  int    `short:"n" long:"pageno" description:"Number of search page"`
 }
 
 const (
@@ -71,11 +72,7 @@ func Main(cliArgs []string) exitCode {
 		return exitCodeErrArgs
 	}
 
-	sortby := "rel"
-	if opts.Sort != "" {
-		sortby = opts.Sort
-	}
-	url, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(sortby))
+	url, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(opts.Sort), opts.PageNo)
 	if err != nil {
 		log.Println(err)
 		return exitCodeErrArgs

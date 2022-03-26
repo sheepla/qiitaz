@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/charmbracelet/glamour"
@@ -35,10 +36,16 @@ func (s SortBy) varidate() bool {
 	}
 }
 
-func NewSearchURL(query string, sortby SortBy) (string, error) {
+func NewSearchURL(query string, sortby SortBy, pageno int) (string, error) {
+	if sortby == "" {
+		sortby = "rel"
+	}
 	if !sortby.varidate() {
 		return "", fmt.Errorf("invalid sort key: %s", sortby)
 	}
+	// if pageno == 0 {
+	// 	pageno = 1
+	// }
 
 	u := &url.URL{
 		Scheme: "https",
@@ -48,6 +55,7 @@ func NewSearchURL(query string, sortby SortBy) (string, error) {
 	q := u.Query()
 	q.Set("q", query)
 	q.Set("sort", string(sortby))
+	q.Set("page", strconv.Itoa(pageno))
 	u.RawQuery = q.Encode()
 	return u.String(), nil
 }
