@@ -29,6 +29,7 @@ type options struct {
 	Version bool   `short:"V" long:"version" description:"Show version"`
 	Sort    string `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
 	Open    bool   `short:"o" long:"open" description:"Open URL in your web browser"`
+	Preview bool   `short:"p" long:"preview" description:"Preview page on your terminal"`
 }
 
 const (
@@ -37,6 +38,7 @@ const (
 	exitCodeErrRequest
 	exitCodeErrFuzzyFinder
 	exitCodeErrWebbrowser
+	exitCodeErrPreview
 )
 
 func main() {
@@ -73,13 +75,13 @@ func Main(cliArgs []string) exitCode {
 	if opts.Sort != "" {
 		sortby = opts.Sort
 	}
-	url, err := client.NewURL(strings.Join(args, " "), client.SortBy(sortby))
+	url, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(sortby))
 	if err != nil {
 		log.Println(err)
 		return exitCodeErrArgs
 	}
 
-	result, err := client.Get(url)
+	result, err := client.Search(url)
 	if err != nil {
 		log.Println(err)
 		return exitCodeErrRequest
@@ -91,15 +93,25 @@ func Main(cliArgs []string) exitCode {
 		return exitCodeErrFuzzyFinder
 	}
 
-	for _, idx := range choices {
-		url := path.Join(baseURL, result[idx].Link)
-		if opts.Open {
+	if opts.Open {
+		for _, idx := range choices {
+			url := path.Join(baseURL, result[idx].Link)
 			if err := webbrowser.Open(url); err != nil {
 				log.Println(err)
 				return exitCodeErrWebbrowser
 			}
-		} else {
-			fmt.Println(url)
+		}
+	}
+
+	if opts.Preview {
+		for _, idx := range choices {
+			url := client.NewPageURL((result[idx].Link + ".md"))
+			view, err := client.Preview(url)
+			if err != nil {
+				log.Println(err)
+				return exitCodeErrPreview
+			}
+			fmt.Fprintf(os.Stdout, *view)
 		}
 	}
 
