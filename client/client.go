@@ -91,7 +91,7 @@ func NewPageURL(path string) string {
 	return u.String()
 }
 
-func Preview(url string) (*string, error) {
+func Preview(url, style string) (*string, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func Preview(url string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	view, err := glamour.Render(string(body), "ascii")
+	view, err := glamour.Render(string(body), style)
 	if err != nil {
 		return nil, err
 	}

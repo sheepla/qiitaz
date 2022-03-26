@@ -106,7 +106,7 @@ func Main(cliArgs []string) exitCode {
 	if opts.Preview {
 		for _, idx := range choices {
 			url := client.NewPageURL((result[idx].Link + ".md"))
-			view, err := client.Preview(url)
+			view, err := client.Preview(url, "dark")
 			if err != nil {
 				log.Println(err)
 				return exitCodeErrPreview
