@@ -104,12 +104,12 @@ qiitaz -s like Go`
 
 > [Latest Release](https://github.com/sheepla/qiitaz/releases/latest)
 
+ソースからビルドする場合は、このリポジトリをクローンして `go install` を実行してください。
+`v1.17.8 linux/amd64`で開発しています。
+
 ## ライセンス
 
 [MIT](LICENSE)
-
-ソースからビルドする場合は、このリポジトリをクローンして `go install` を実行してください。
-`v1.17.8 linux/amd64`で開発しています。
 
 ## 関連
 
