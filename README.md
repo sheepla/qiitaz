@@ -88,7 +88,7 @@ qiitaz title:Go created:\>2022-03-01
 **例**: 
 
 ```
-qiitaz -s like Go`
+qiitaz -s like Go
 ```
 
 |値       |説明              |
