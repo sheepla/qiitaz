@@ -101,12 +101,12 @@ qiitaz -s like Go
 
 ## インストール
 
-リリースページから実行可能なバイナリをダウンロード可能です。
+リリースページから実行可能なバイナリをダウンロードしてください。
 
 > [Latest Release](https://github.com/sheepla/qiitaz/releases/latest)
 
 ソースからビルドする場合は、このリポジトリをクローンして `go install` を実行してください。
-`v1.17.8 linux/amd64`で開発しています。
+`v1.17.8 linux/amd64`にて開発しています。
 
 ## ライセンス
 
