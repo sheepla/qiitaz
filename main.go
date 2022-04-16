@@ -8,9 +8,9 @@ import (
 
 	"github.com/jessevdk/go-flags"
 	"github.com/ktr0731/go-fuzzyfinder"
-	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-runewidth"
 	"github.com/sheepla/qiitaz/client"
+	"github.com/sheepla/qiitaz/ui"
 	"github.com/toqueteos/webbrowser"
 )
 
@@ -100,12 +100,11 @@ func Main(cliArgs []string) exitCode {
 	if opts.Preview {
 		for _, idx := range choices {
 			url := client.NewPageURL((result[idx].Link + ".md"))
-			view, err := client.Preview(url, "dark")
-			if err != nil {
+			title := result[idx].Title
+			if err := ui.Preview(url, title); err != nil {
 				log.Println(err)
 				return exitCodeErrPreview
 			}
-			fmt.Fprintf(colorable.NewColorableStdout(), *view)
 		}
 	}
 
