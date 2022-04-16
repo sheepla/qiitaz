@@ -9,6 +9,7 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/mattn/go-colorable"
+	"github.com/mattn/go-runewidth"
 	"github.com/sheepla/qiitaz/client"
 	"github.com/toqueteos/webbrowser"
 )
@@ -117,15 +118,23 @@ func find(result []client.Result) ([]int, error) {
 		func(i int) string {
 			return result[i].Title
 		},
-		fuzzyfinder.WithPreviewWindow(func(i, width, height int) string {
+		fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
 			if i == -1 {
 				return ""
 			}
+
+			wrapedWidth := w/2 - 5
+
+			header := runewidth.Wrap(result[i].Header, wrapedWidth)
+			title := runewidth.Wrap(result[i].Title, wrapedWidth)
+			snippet := runewidth.Wrap(result[i].Snippet, wrapedWidth)
+			tags := runewidth.Wrap(strings.Join(result[i].Tags, " "), wrapedWidth)
+
 			return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
-				result[i].Header,
-				result[i].Title,
-				result[i].Snippet,
-				strings.Join(result[i].Tags, " "),
+				header,
+				title,
+				snippet,
+				tags,
 			)
 		}),
 	)
