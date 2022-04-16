@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -112,12 +113,13 @@ func Preview(url, title string) error {
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
+	r, err := glamour.RenderBytes(body, "dark")
 	if err != nil {
 		return err
 	}
 	p := tea.NewProgram(
 		model{
-			content: string(body),
+			content: string(r),
 			title:   title,
 		},
 		tea.WithAltScreen(),
