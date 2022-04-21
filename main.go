@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -71,19 +70,19 @@ func Main(cliArgs []string) exitCode {
 
 	url, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(opts.Sort), opts.PageNo)
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return exitCodeErrArgs
 	}
 
 	result, err := client.Search(url)
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return exitCodeErrRequest
 	}
 
 	choices, err := find(result)
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return exitCodeErrFuzzyFinder
 	}
 
@@ -91,7 +90,7 @@ func Main(cliArgs []string) exitCode {
 		for _, idx := range choices {
 			url := client.NewPageURL(result[idx].Link)
 			if err := webbrowser.Open(url); err != nil {
-				log.Println(err)
+				fmt.Fprintln(os.Stderr, err)
 				return exitCodeErrWebbrowser
 			}
 		}
@@ -102,7 +101,7 @@ func Main(cliArgs []string) exitCode {
 			url := client.NewPageURL((result[idx].Link + ".md"))
 			title := result[idx].Title
 			if err := ui.Preview(url, title); err != nil {
-				log.Println(err)
+				fmt.Fprintln(os.Stderr, err)
 				return exitCodeErrPreview
 			}
 		}
