@@ -50,6 +50,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" {
 			return m, tea.Quit
 		}
+		if msg.String() == "g" {
+			m.viewport.GotoTop()
+			cmds = append(cmds, viewport.Sync(m.viewport))
+		}
+		if msg.String() == "G" {
+			m.viewport.GotoBottom()
+			cmds = append(cmds, viewport.Sync(m.viewport))
+		}
 	case tea.WindowSizeMsg:
 		headerHeight := lipgloss.Height(m.headerView())
 		footerHeight := lipgloss.Height(m.footerView())
@@ -68,9 +76,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.viewport.Height = msg.Height - verticalMarginHeight
 		}
 
-		if useHighPerformanceRenderer {
-			cmds = append(cmds, viewport.Sync(m.viewport))
-		}
+		cmds = append(cmds, viewport.Sync(m.viewport))
 	}
 
 	m.viewport, cmd = m.viewport.Update(msg)
