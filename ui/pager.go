@@ -9,20 +9,20 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
-	"github.com/charmbracelet/lipgloss"
+	lip "github.com/charmbracelet/lipgloss"
 )
 
 const useHighPerformanceRenderer = true
 
 var (
-	titleStyle = func() lipgloss.Style {
-		b := lipgloss.NormalBorder()
+	titleStyle = func() lip.Style {
+		b := lip.NormalBorder()
 		b.Right = "├"
-		return lipgloss.NewStyle().BorderStyle(b).Padding(0, 1)
+		return lip.NewStyle().BorderStyle(b).Padding(0, 1)
 	}()
 
-	infoStyle = func() lipgloss.Style {
-		b := lipgloss.NormalBorder()
+	infoStyle = func() lip.Style {
+		b := lip.NormalBorder()
 		b.Left = "┤"
 		return titleStyle.Copy().BorderStyle(b)
 	}()
@@ -59,8 +59,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, viewport.Sync(m.viewport))
 		}
 	case tea.WindowSizeMsg:
-		headerHeight := lipgloss.Height(m.headerView())
-		footerHeight := lipgloss.Height(m.footerView())
+		headerHeight := lip.Height(m.headerView())
+		footerHeight := lip.Height(m.footerView())
 		verticalMarginHeight := headerHeight + footerHeight
 
 		if !m.ready {
@@ -94,14 +94,14 @@ func (m *model) View() string {
 
 func (m *model) headerView() string {
 	title := titleStyle.Render(m.title)
-	line := strings.Repeat("─", larger(0, m.viewport.Width-lipgloss.Width(title)))
-	return lipgloss.JoinHorizontal(lipgloss.Center, title, line)
+	line := strings.Repeat("─", larger(0, m.viewport.Width-lip.Width(title)))
+	return lip.JoinHorizontal(lip.Center, title, line)
 }
 
 func (m *model) footerView() string {
 	info := infoStyle.Render(scrollPercent(m.viewport.ScrollPercent()))
-	line := strings.Repeat("─", larger(0, m.viewport.Width-lipgloss.Width(info)))
-	return lipgloss.JoinHorizontal(lipgloss.Center, line, info)
+	line := strings.Repeat("─", larger(0, m.viewport.Width-lip.Width(info)))
+	return lip.JoinHorizontal(lip.Center, line, info)
 }
 
 func scrollPercent(p float64) string {
