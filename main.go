@@ -41,8 +41,6 @@ const (
 	exitCodeErrPreview
 )
 
-var stdout = bufio.NewWriter(os.Stdout)
-
 func main() {
 	os.Exit(int(Main(os.Args[1:])))
 }
@@ -134,6 +132,10 @@ func Main(cliArgs []string) exitCode {
 				return exitCodeErrPreview
 			}
 		}
+	}
+
+	for _, idx := range choices {
+		fmt.Println(client.NewPageURL(results[idx].Link))
 	}
 
 	return exitCodeOK
