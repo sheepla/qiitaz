@@ -152,16 +152,11 @@ func find(result []client.Result) ([]int, error) {
 
 			wrapedWidth := w/2 - 5
 
-			header := runewidth.Wrap(result[i].Header, wrapedWidth)
-			title := runewidth.Wrap(result[i].Title, wrapedWidth)
-			snippet := runewidth.Wrap(result[i].Snippet, wrapedWidth)
-			tags := runewidth.Wrap(strings.Join(result[i].Tags, " "), wrapedWidth)
-
 			return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
-				header,
-				title,
-				snippet,
-				tags,
+				runewidth.Wrap(result[i].Header, wrapedWidth),
+				runewidth.Wrap(result[i].Title, wrapedWidth),
+				runewidth.Wrap(result[i].Snippet, wrapedWidth),
+				runewidth.Wrap(strings.Join(result[i].Tags, " "), wrapedWidth),
 			)
 		}),
 	)
