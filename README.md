@@ -34,7 +34,7 @@ Application Options:
   -s, --sort=    Sort key to search e.g. "created", "like", "stock", "rel",  (default: "rel")
   -o, --open     Open URL in your web browser
   -p, --preview  Preview page on your terminal
-  -n, --pageno=  Number of search page
+  -n, --pageno=  Max page number of search page (default: 1)
 
 Help Options:
   -h, --help     Show this help message
