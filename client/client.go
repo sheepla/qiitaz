@@ -21,7 +21,7 @@ type Result struct {
 
 type SortBy string
 
-func (s SortBy) varidate() bool {
+func (s SortBy) validate() bool {
 	switch s {
 	case "like":
 		return true
@@ -40,13 +40,9 @@ func NewSearchURL(query string, sortby SortBy, pageno int) (string, error) {
 	if sortby == "" {
 		sortby = "rel"
 	}
-	if !sortby.varidate() {
+	if !sortby.validate() {
 		return "", fmt.Errorf("invalid sort key: %s", sortby)
 	}
-	// if pageno == 0 {
-	// 	pageno = 1
-	// }
-
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "qiita.com",
