@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -27,6 +29,7 @@ type options struct {
 	Open    bool   `short:"o" long:"open" description:"Open URL in your web browser"`
 	Preview bool   `short:"p" long:"preview" description:"Preview page on your terminal"`
 	PageNo  int    `short:"n" long:"pageno" description:"Max page number of search page" default:"1"`
+	Json    bool   `short:"j" long:"json" description:"Output result in JSON format"`
 }
 
 const (
@@ -91,6 +94,17 @@ func Main(cliArgs []string) exitCode {
 			return exitCodeErrRequest
 		}
 		results = append(results, r...)
+	}
+
+	if opts.Json {
+		bytes, err := json.Marshal(&results)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		stdout := bufio.NewWriter(os.Stdout)
+		fmt.Fprintln(stdout, string(bytes))
+		stdout.Flush()
+		return exitCodeOK
 	}
 
 	choices, err := find(results)
