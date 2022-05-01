@@ -31,10 +31,12 @@ Usage:
 
 Application Options:
   -V, --version  Show version
-  -s, --sort=    Sort key to search e.g. "created", "like", "stock", "rel",  (default: "rel")
+  -s, --sort=    Sort key to search e.g. "created", "like", "stock", "rel",
+                 (default: "rel")
   -o, --open     Open URL in your web browser
   -p, --preview  Preview page on your terminal
   -n, --pageno=  Max page number of search page (default: 1)
+  -j, --json     Output result in JSON format
 
 Help Options:
   -h, --help     Show this help message
@@ -105,6 +107,14 @@ qiitaz -s like Go
 |`like`   |LGTM数の多い順    |
 |`stock`  |ストック数の多い順|
 |`created`|作成日順          |
+
+### JSON形式で出力
+
+`-j`, `--json` オプションを指定すると、検索結果をJSON形式で出力することができます。
+
+```
+qiitaz -j QUERY...
+```
 
 ## インストール
 

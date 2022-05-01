@@ -41,6 +41,8 @@ const (
 	exitCodeErrPreview
 )
 
+var stdout = bufio.NewWriter(os.Stdout)
+
 func main() {
 	os.Exit(int(Main(os.Args[1:])))
 }
