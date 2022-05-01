@@ -26,7 +26,7 @@ type options struct {
 	Sort    string `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
 	Open    bool   `short:"o" long:"open" description:"Open URL in your web browser"`
 	Preview bool   `short:"p" long:"preview" description:"Preview page on your terminal"`
-	PageNo  int    `short:"n" long:"pageno" description:"Number of search page"`
+	PageNo  int    `short:"n" long:"pageno" description:"Number of search page" default:"1"`
 }
 
 const (
@@ -65,6 +65,11 @@ func Main(cliArgs []string) exitCode {
 
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Must require argument (s)")
+		return exitCodeErrArgs
+	}
+
+	if opts.PageNo <= 0 {
+		fmt.Fprintln(os.Stderr, "The page number must be a positive value.")
 		return exitCodeErrArgs
 	}
 
