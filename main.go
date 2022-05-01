@@ -26,7 +26,7 @@ type options struct {
 	Sort    string `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
 	Open    bool   `short:"o" long:"open" description:"Open URL in your web browser"`
 	Preview bool   `short:"p" long:"preview" description:"Preview page on your terminal"`
-	PageNo  int    `short:"n" long:"pageno" description:"Number of search page" default:"1"`
+	PageNo  int    `short:"n" long:"pageno" description:"Max page number of search page" default:"1"`
 }
 
 const (
@@ -73,19 +73,27 @@ func Main(cliArgs []string) exitCode {
 		return exitCodeErrArgs
 	}
 
-	url, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(opts.Sort), opts.PageNo)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return exitCodeErrArgs
+	var urls []string
+	for i := 1; i <= opts.PageNo; i++ {
+		u, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(opts.Sort), i)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return exitCodeErrArgs
+		}
+		urls = append(urls, u)
 	}
 
-	result, err := client.Search(url)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return exitCodeErrRequest
+	var results []client.Result
+	for _, u := range urls {
+		r, err := client.Search(u)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return exitCodeErrRequest
+		}
+		results = append(results, r...)
 	}
 
-	choices, err := find(result)
+	choices, err := find(results)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return exitCodeErrFuzzyFinder
@@ -93,7 +101,7 @@ func Main(cliArgs []string) exitCode {
 
 	if opts.Open {
 		for _, idx := range choices {
-			url := client.NewPageURL(result[idx].Link)
+			url := client.NewPageURL(results[idx].Link)
 			if err := webbrowser.Open(url); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				return exitCodeErrWebbrowser
@@ -103,8 +111,8 @@ func Main(cliArgs []string) exitCode {
 
 	if opts.Preview {
 		for _, idx := range choices {
-			url := client.NewPageURL((result[idx].Link + ".md"))
-			title := result[idx].Title
+			url := client.NewPageURL((results[idx].Link + ".md"))
+			title := results[idx].Title
 			if err := ui.Preview(url, title); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				return exitCodeErrPreview
