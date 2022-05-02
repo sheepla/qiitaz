@@ -96,6 +96,11 @@ func Main(cliArgs []string) exitCode {
 		results = append(results, r...)
 	}
 
+	if len(results) == 0 {
+		fmt.Fprintln(os.Stderr, "No results found.")
+		return exitCodeOK
+	}
+
 	if opts.Json {
 		bytes, err := json.Marshal(&results)
 		if err != nil {
