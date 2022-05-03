@@ -17,7 +17,7 @@ import (
 
 const (
 	appName    = "qiitaz"
-	appVersion = "0.0.5"
+	appVersion = "0.0.9"
 	appUsage   = "[OPTIONS] QUERY..."
 )
 
