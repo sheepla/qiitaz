@@ -116,6 +116,10 @@ func Main(cliArgs []string) exitCode {
 		return exitCodeErrFuzzyFinder
 	}
 
+	if len(choices) == 0 {
+		return exitCodeOK
+	}
+
 	if opts.Open {
 		for _, idx := range choices {
 			url := client.NewPageURL(results[idx].Link)
