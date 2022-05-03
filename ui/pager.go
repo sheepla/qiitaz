@@ -122,6 +122,9 @@ func Preview(url, title string) error {
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
 	r, err := glamour.RenderBytes(body, "dark")
 	if err != nil {
 		return err
