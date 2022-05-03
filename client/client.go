@@ -10,11 +10,11 @@ import (
 )
 
 type Result struct {
-	Header  string   `qoquery:"div.searchResult_header,text" json:"header"`
-	Title   string   `qoquery:"h1.searchResult_itemTitle a,text" json:"title"`
-	Link    string   `qoquery:"h1.searchResult_itemTitle a,[href]" json:"link"`
-	Snippet string   `qoquery:"div.searchResult_snippet,text" json:"snippet"`
-	Tags    []string `qoquery:"li.tagList_item a,text" json:"tags"`
+	Header  string   `json:"header"`
+	Title   string   `json:"title"`
+	Link    string   `json:"link"`
+	Snippet string   `json:"snippet"`
+	Tags    []string `json:"tags"`
 }
 
 type SortBy string
@@ -69,7 +69,6 @@ func Search(url string) ([]Result, error) {
 		results []Result
 		r       Result
 	)
-
 	doc.Find("div.searchResult_main").Each(func(i int, div *goquery.Selection) {
 		r.Header = div.Find("div.searchResult_header").Text()
 		t := div.Find("h1.searchResult_itemTitle a")
