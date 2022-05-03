@@ -65,18 +65,20 @@ func Search(url string) ([]Result, error) {
 		return nil, err
 	}
 
-	var results []Result
-	var r Result
+	var (
+		results []Result
+		r       Result
+	)
 
-	doc.Find("div.searchResult_main").Each(func(i int, s *goquery.Selection) {
-		r.Header = s.Find("div.searchResult_header").Text()
-		t := s.Find("h1.searchResult_itemTitle a")
+	doc.Find("div.searchResult_main").Each(func(i int, div *goquery.Selection) {
+		r.Header = div.Find("div.searchResult_header").Text()
+		t := div.Find("h1.searchResult_itemTitle a")
 		r.Title = t.Text()
 		r.Link = t.AttrOr("href", "")
-		r.Snippet = s.Find("div.searchResult_snippet").Text()
+		r.Snippet = div.Find("div.searchResult_snippet").Text()
 		r.Tags = nil
-		s.Find("li.tagList_item a").Each(func(i int, ss *goquery.Selection) {
-			r.Tags = append(r.Tags, ss.Text())
+		div.Find("li.tagList_item a").Each(func(i int, a *goquery.Selection) {
+			r.Tags = append(r.Tags, a.Text())
 		})
 		results = append(results, r)
 	})
