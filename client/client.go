@@ -2,13 +2,11 @@ package client
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/charmbracelet/glamour"
 )
 
 type Result struct {
@@ -93,21 +91,4 @@ func NewPageURL(path string) string {
 		Path:   path,
 	}
 	return u.String()
-}
-
-func Preview(url, style string) (*string, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	view, err := glamour.Render(string(body), style)
-	if err != nil {
-		return nil, err
-	}
-	return &view, nil
 }
