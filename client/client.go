@@ -92,3 +92,7 @@ func NewPageURL(path string) string {
 	}
 	return u.String()
 }
+
+func NewPageMarkdownURL(path string) string {
+	return NewPageURL(path) + ".md"
+}

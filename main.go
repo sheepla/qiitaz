@@ -128,7 +128,7 @@ func Main(cliArgs []string) exitCode {
 
 	if opts.Preview {
 		for _, idx := range choices {
-			url := client.NewPageURL((results[idx].Link + ".md"))
+			url := client.NewPageMarkdownURL(results[idx].Link)
 			title := results[idx].Title
 			if err := ui.Preview(url, title); err != nil {
 				fmt.Fprintln(os.Stderr, err)
