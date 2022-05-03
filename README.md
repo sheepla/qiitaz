@@ -123,7 +123,7 @@ qiitaz -j QUERY...
 > [Latest Release](https://github.com/sheepla/qiitaz/releases/latest)
 
 ソースからビルドする場合は、このリポジトリをクローンして `go install` を実行してください。
-`v1.17.8 linux/amd64`にて開発しています。
+`v1.18.1 linux/amd64`にて開発しています。
 
 ## ライセンス
 
