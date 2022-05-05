@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -36,50 +37,52 @@ const (
 	exitCodeErrRequest
 	exitCodeErrFuzzyFinder
 	exitCodeErrWebbrowser
+	exitCodeErrJson
 	exitCodeErrPreview
 )
 
 func main() {
-	os.Exit(int(Main(os.Args[1:])))
+	exitCode, err := Main(os.Args[1:])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	os.Exit(int(exitCode))
 }
 
-func Main(cliArgs []string) exitCode {
+func Main(cliArgs []string) (exitCode, error) {
 	var opts options
 	parser := flags.NewParser(&opts, flags.Default)
 	parser.Name = appName
 	parser.Usage = appUsage
 
 	args, err := parser.ParseArgs(cliArgs)
+	// The content of the go-flags error is already output, so ignore it.
 	if err != nil {
 		if flags.WroteHelp(err) {
-			return exitCodeOK
-		} else {
-			fmt.Fprintf(os.Stderr, "Argument parsing failed: %s", err)
-			return exitCodeErrArgs
+			return exitCodeOK, nil
 		}
+		return exitCodeErrArgs, nil
 	}
 
 	if opts.Version {
 		fmt.Printf("%s: v%s\n", appName, appVersion)
-		return exitCodeOK
+		return exitCodeOK, nil
 	}
 
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "Must require argument (s)")
-		return exitCodeErrArgs
+		return exitCodeErrArgs, errors.New("must require argument (s)")
 	}
 
 	if opts.PageNo <= 0 {
-		fmt.Fprintln(os.Stderr, "The page number must be a positive value.")
-		return exitCodeErrArgs
+		fmt.Fprintln(os.Stderr)
+		return exitCodeErrArgs, errors.New("the page number must be a positive value")
 	}
 
 	var urls []string
 	for i := 1; i <= opts.PageNo; i++ {
 		u, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(opts.Sort), i)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			return exitCodeErrArgs
+			return exitCodeErrArgs, fmt.Errorf("failed to create search URL %s: %s", u, err)
 		}
 		urls = append(urls, u)
 	}
@@ -88,44 +91,40 @@ func Main(cliArgs []string) exitCode {
 	for _, u := range urls {
 		r, err := client.Search(u)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			return exitCodeErrRequest
+			return exitCodeErrRequest, fmt.Errorf("failed to search articles: %s", err)
 		}
 		results = append(results, r...)
 	}
 
 	if len(results) == 0 {
-		fmt.Fprintln(os.Stderr, "No results found.")
-		return exitCodeOK
+		return exitCodeOK, errors.New("no results found")
 	}
 
 	if opts.Json {
 		bytes, err := json.Marshal(&results)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			return exitCodeErrJson, fmt.Errorf("failed to marshalling JSON: %s", err)
 		}
 		stdout := bufio.NewWriter(os.Stdout)
 		fmt.Fprintln(stdout, string(bytes))
 		stdout.Flush()
-		return exitCodeOK
+		return exitCodeOK, nil
 	}
 
 	choices, err := ui.Find(results)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return exitCodeErrFuzzyFinder
+		return exitCodeErrFuzzyFinder, fmt.Errorf("an error occured on fuzzyfinder: %s", err)
 	}
 
 	if len(choices) == 0 {
-		return exitCodeOK
+		return exitCodeOK, nil
 	}
 
 	if opts.Open {
 		for _, idx := range choices {
 			url := client.NewPageURL(results[idx].Link)
 			if err := webbrowser.Open(url); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				return exitCodeErrWebbrowser
+				return exitCodeErrWebbrowser, fmt.Errorf("failed to open the URL %s: %s", url, err)
 			}
 		}
 	}
@@ -135,8 +134,7 @@ func Main(cliArgs []string) exitCode {
 			url := client.NewPageMarkdownURL(results[idx].Link)
 			title := results[idx].Title
 			if err := ui.Preview(url, title); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				return exitCodeErrPreview
+				return exitCodeErrPreview, fmt.Errorf("failed to preview the page (URL: %s, title: %s): %s", url, title, err)
 			}
 		}
 	}
@@ -145,5 +143,5 @@ func Main(cliArgs []string) exitCode {
 		fmt.Println(client.NewPageURL(results[idx].Link))
 	}
 
-	return exitCodeOK
+	return exitCodeOK, nil
 }

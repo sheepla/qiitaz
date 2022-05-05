@@ -57,12 +57,12 @@ func NewSearchURL(query string, sortby SortBy, pageno int) (string, error) {
 func Search(url string) ([]Result, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch the page %s: %s", url, err)
 	}
 	defer res.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse HTML: %s", err)
 	}
 
 	var (
@@ -82,7 +82,7 @@ func Search(url string) ([]Result, error) {
 		results = append(results, r)
 	})
 
-	return results, err
+	return results, nil
 }
 
 func NewPageURL(path string) string {
