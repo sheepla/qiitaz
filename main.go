@@ -14,10 +14,11 @@ import (
 	"github.com/toqueteos/webbrowser"
 )
 
-const (
-	appName    = "qiitaz"
-	appVersion = "0.1.0"
-	appUsage   = "[OPTIONS] QUERY..."
+var (
+	appName     = "qiitaz"
+	appVersion  = "unknown"
+	appRevision = "unknown"
+	appUsage    = "[OPTIONS] QUERY..."
 )
 
 type exitCode int
