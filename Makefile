@@ -1,5 +1,16 @@
 NAME = qiitaz
 BIN := bin/$(NAME)
+
+# version e.g. v0.0.1
+VERSION := $(shell git describe --tags --abbrev=0 | tr -d "v")
+# commit hash of HEAD e.g. 3a913f
+REVISION := $(shell git rev-parse --short HEAD)
+
+LDFLAGS := -w \
+		   -s \
+		   -X "main.appVersion=$(VERSION)" \
+		   -X "main.appRevision=$(REVISION)"
+
 COVERAGE_OUT := .test/cover.out
 COVERAGE_HTML := .test/cover.html
 
@@ -13,7 +24,7 @@ lint:
 
 .PHONY: build
 build:
-	go build -o $(BIN)
+	go build -ldflags "$(LDFLAGS)" -o $(BIN)
 
 .PHONY: test
 test:

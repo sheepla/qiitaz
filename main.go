@@ -66,7 +66,7 @@ func Main(cliArgs []string) (exitCode, error) {
 	}
 
 	if opts.Version {
-		fmt.Printf("%s: v%s\n", appName, appVersion)
+		fmt.Printf("%s: v%s-%s\n", appName, appVersion, appRevision)
 		return exitCodeOK, nil
 	}
 
