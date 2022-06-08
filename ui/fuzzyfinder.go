@@ -9,7 +9,7 @@ import (
 	"github.com/sheepla/qiitaz/client"
 )
 
-func Find(result []client.Result) ([]int, error) {
+func FindMulti(result []client.Result) ([]int, error) {
 	return fuzzyfinder.FindMulti(
 		result,
 		func(i int) string {
@@ -21,13 +21,33 @@ func Find(result []client.Result) ([]int, error) {
 			}
 
 			wrapedWidth := w/2 - 5
-
-			return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
-				runewidth.Wrap(result[i].Header, wrapedWidth),
-				runewidth.Wrap(result[i].Title, wrapedWidth),
-				runewidth.Wrap(result[i].Snippet, wrapedWidth),
-				runewidth.Wrap(strings.Join(result[i].Tags, " "), wrapedWidth),
-			)
+			return runewidth.Wrap(renderPreviewWindow(&result[i]), wrapedWidth)
 		}),
+	)
+}
+
+func Find(result []client.Result) (int, error) {
+	return fuzzyfinder.Find(
+		result,
+		func(i int) string {
+			return result[i].Title
+		},
+		fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
+			if i == -1 {
+				return ""
+			}
+
+			wrapedWidth := w/2 - 5
+			return runewidth.Wrap(renderPreviewWindow(&result[i]), wrapedWidth)
+		}),
+	)
+}
+
+func renderPreviewWindow(result *client.Result) string {
+	return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
+		result.Header,
+		result.Title,
+		result.Snippet,
+		strings.Join(result.Tags, " "),
 	)
 }

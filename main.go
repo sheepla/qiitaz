@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/jessevdk/go-flags"
+	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/sheepla/qiitaz/client"
 	"github.com/sheepla/qiitaz/ui"
 	"github.com/toqueteos/webbrowser"
@@ -112,9 +113,16 @@ func Main(cliArgs []string) (exitCode, error) {
 		return exitCodeOK, nil
 	}
 
-	choices, err := ui.Find(results)
+	if opts.Preview {
+		if err := startPreviewMode(results); err != nil {
+			return exitCodeErrPreview, fmt.Errorf("an error occurred on preview mode: %w", err)
+		}
+		return exitCodeOK, nil
+	}
+
+	choices, err := ui.FindMulti(results)
 	if err != nil {
-		return exitCodeErrFuzzyFinder, fmt.Errorf("an error occured on fuzzyfinder: %s", err)
+		return exitCodeErrFuzzyFinder, fmt.Errorf("an error occurred on fuzzyfinder: %s", err)
 	}
 
 	if len(choices) == 0 {
@@ -130,19 +138,27 @@ func Main(cliArgs []string) (exitCode, error) {
 		}
 	}
 
-	if opts.Preview {
-		for _, idx := range choices {
-			url := client.NewPageMarkdownURL(results[idx].Link)
-			title := results[idx].Title
-			if err := ui.Preview(url, title); err != nil {
-				return exitCodeErrPreview, fmt.Errorf("failed to preview the page (URL: %s, title: %s): %s", url, title, err)
-			}
-		}
-	}
-
 	for _, idx := range choices {
 		fmt.Println(client.NewPageURL(results[idx].Link))
 	}
 
 	return exitCodeOK, nil
+}
+
+func startPreviewMode(result []client.Result) error {
+	for {
+		idx, err := ui.Find(result)
+		if err != nil {
+			if errors.Is(fuzzyfinder.ErrAbort, err) {
+				// normal termination
+				return nil
+			}
+			return fmt.Errorf("an error occurred on fuzzyfinder: %w", err)
+		}
+		url := client.NewPageMarkdownURL(result[idx].Link)
+		title := result[idx].Title
+		if err := ui.Preview(url, title); err != nil {
+			return fmt.Errorf("an error occurred on pager: %w", err)
+		}
+	}
 }
