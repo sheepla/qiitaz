@@ -1,7 +1,6 @@
 <div align="right">
 
-![CI](https://github.com/sheepla/fzwiki/actions/workflows/ci.yml/badge.svg)
-![Relase](https://github.com/sheepla/fzwiki/actions/workflows/release.yml/badge.svg)
+![Relase](https://github.com/sheepla/qiitaz/actions/workflows/release.yml/badge.svg)
 
 <a href="https://github.com/sheepla/qiitaz/releases/latest">
 
