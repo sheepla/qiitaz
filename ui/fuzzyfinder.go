@@ -9,36 +9,40 @@ import (
 	"github.com/sheepla/qiitaz/client"
 )
 
+// nolint:wrapcheck,gomnd
 func FindMulti(result []client.Result) ([]int, error) {
 	return fuzzyfinder.FindMulti(
 		result,
 		func(i int) string {
 			return result[i].Title
 		},
-		fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
-			if i == -1 {
+		fuzzyfinder.WithPreviewWindow(func(idx, width, height int) string {
+			if idx == -1 {
 				return ""
 			}
 
-			wrapedWidth := w/2 - 5
-			return runewidth.Wrap(renderPreviewWindow(&result[i]), wrapedWidth)
+			wrapedWidth := width/2 - 5
+
+			return runewidth.Wrap(renderPreviewWindow(&result[idx]), wrapedWidth)
 		}),
 	)
 }
 
+// nolint:wrapcheck,gomnd
 func Find(result []client.Result) (int, error) {
 	return fuzzyfinder.Find(
 		result,
 		func(i int) string {
 			return result[i].Title
 		},
-		fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
-			if i == -1 {
+		fuzzyfinder.WithPreviewWindow(func(idx, width, height int) string {
+			if idx == -1 {
 				return ""
 			}
 
-			wrapedWidth := w/2 - 5
-			return runewidth.Wrap(renderPreviewWindow(&result[i]), wrapedWidth)
+			wrapedWidth := width/2 - 5
+
+			return runewidth.Wrap(renderPreviewWindow(&result[idx]), wrapedWidth)
 		}),
 	)
 }

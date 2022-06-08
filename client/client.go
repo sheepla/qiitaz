@@ -38,9 +38,13 @@ func NewSearchURL(query string, sortby SortBy, pageno int) (string, error) {
 	if sortby == "" {
 		sortby = "rel"
 	}
+
+	// nolint:goerr113
 	if !sortby.validate() {
 		return "", fmt.Errorf("invalid sort key: %s", sortby)
 	}
+
+	// nolint:exhaustivestruct,exhaustruct,varnamelen
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "qiita.com",
@@ -51,46 +55,52 @@ func NewSearchURL(query string, sortby SortBy, pageno int) (string, error) {
 	q.Set("sort", string(sortby))
 	q.Set("page", strconv.Itoa(pageno))
 	u.RawQuery = q.Encode()
+
 	return u.String(), nil
 }
 
+// nolint:gosec,noctx
 func Search(url string) ([]Result, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch the page %s: %s", url, err)
+		return nil, fmt.Errorf("failed to fetch the page %s: %w", url, err)
 	}
 	defer res.Body.Close()
+
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse HTML: %s", err)
+		return nil, fmt.Errorf("failed to parse HTML: %w", err)
 	}
 
 	var (
 		results []Result
-		r       Result
+		result  Result
 	)
+
 	doc.Find("div.searchResult_main").Each(func(i int, div *goquery.Selection) {
-		r.Header = div.Find("div.searchResult_header").Text()
+		result.Header = div.Find("div.searchResult_header").Text()
 		t := div.Find("h1.searchResult_itemTitle a")
-		r.Title = t.Text()
-		r.Link = t.AttrOr("href", "")
-		r.Snippet = div.Find("div.searchResult_snippet").Text()
-		r.Tags = nil
+		result.Title = t.Text()
+		result.Link = t.AttrOr("href", "")
+		result.Snippet = div.Find("div.searchResult_snippet").Text()
+		result.Tags = nil
 		div.Find("li.tagList_item a").Each(func(i int, a *goquery.Selection) {
-			r.Tags = append(r.Tags, a.Text())
+			result.Tags = append(result.Tags, a.Text())
 		})
-		results = append(results, r)
+		results = append(results, result)
 	})
 
 	return results, nil
 }
 
+// nolint:exhaustivestruct,exhaustruct,varnamelen
 func NewPageURL(path string) string {
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "qiita.com",
 		Path:   path,
 	}
+
 	return u.String()
 }
 

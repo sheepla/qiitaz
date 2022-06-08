@@ -15,6 +15,7 @@ import (
 	"github.com/toqueteos/webbrowser"
 )
 
+// nolint:gochecknoglobals
 var (
 	appName     = "qiitaz"
 	appVersion  = "unknown"
@@ -24,13 +25,14 @@ var (
 
 type exitCode int
 
+// nolint:maligned
 type options struct {
 	Version bool   `short:"V" long:"version" description:"Show version"`
 	Sort    string `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
 	Open    bool   `short:"o" long:"open" description:"Open URL in your web browser"`
 	Preview bool   `short:"p" long:"preview" description:"Preview page on your terminal"`
 	PageNo  int    `short:"n" long:"pageno" description:"Max page number of search page" default:"1"`
-	Json    bool   `short:"j" long:"json" description:"Output result in JSON format"`
+	JSON    bool   `short:"j" long:"json" description:"Output result in JSON format"`
 }
 
 const (
@@ -39,7 +41,7 @@ const (
 	exitCodeErrRequest
 	exitCodeErrFuzzyFinder
 	exitCodeErrWebbrowser
-	exitCodeErrJson
+	exitCodeErrJSON
 	exitCodeErrPreview
 )
 
@@ -48,9 +50,11 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
+
 	os.Exit(int(exitCode))
 }
 
+// nolint:funlen,golint,revive,cyclop
 func Main(cliArgs []string) (exitCode, error) {
 	var opts options
 	parser := flags.NewParser(&opts, flags.Default)
@@ -67,45 +71,53 @@ func Main(cliArgs []string) (exitCode, error) {
 	}
 
 	if opts.Version {
+		// nolint:forbidigo
 		fmt.Printf("%s: v%s-%s\n", appName, appVersion, appRevision)
 		return exitCodeOK, nil
 	}
 
 	if len(args) == 0 {
+		// nolint:goerr113
 		return exitCodeErrArgs, errors.New("must require argument (s)")
 	}
 
 	if opts.PageNo <= 0 {
 		fmt.Fprintln(os.Stderr)
+		// nolint:goerr113
 		return exitCodeErrArgs, errors.New("the page number must be a positive value")
 	}
 
 	var urls []string
+
 	for i := 1; i <= opts.PageNo; i++ {
 		u, err := client.NewSearchURL(strings.Join(args, " "), client.SortBy(opts.Sort), i)
 		if err != nil {
-			return exitCodeErrArgs, fmt.Errorf("failed to create search URL %s: %s", u, err)
+			return exitCodeErrArgs, fmt.Errorf("failed to create search URL %s: %w", u, err)
 		}
+
 		urls = append(urls, u)
 	}
 
 	var results []client.Result
+
 	for _, u := range urls {
 		r, err := client.Search(u)
 		if err != nil {
-			return exitCodeErrRequest, fmt.Errorf("failed to search articles: %s", err)
+			return exitCodeErrRequest, fmt.Errorf("failed to search articles: %w", err)
 		}
+
 		results = append(results, r...)
 	}
 
 	if len(results) == 0 {
+		// nolint:goerr113
 		return exitCodeOK, errors.New("no results found")
 	}
 
-	if opts.Json {
+	if opts.JSON {
 		bytes, err := json.Marshal(&results)
 		if err != nil {
-			return exitCodeErrJson, fmt.Errorf("failed to marshalling JSON: %s", err)
+			return exitCodeErrJSON, fmt.Errorf("failed to marshalling JSON: %w", err)
 		}
 		stdout := bufio.NewWriter(os.Stdout)
 		fmt.Fprintln(stdout, string(bytes))
@@ -122,7 +134,7 @@ func Main(cliArgs []string) (exitCode, error) {
 
 	choices, err := ui.FindMulti(results)
 	if err != nil {
-		return exitCodeErrFuzzyFinder, fmt.Errorf("an error occurred on fuzzyfinder: %s", err)
+		return exitCodeErrFuzzyFinder, fmt.Errorf("an error occurred on fuzzyfinder: %w", err)
 	}
 
 	if len(choices) == 0 {
@@ -133,12 +145,13 @@ func Main(cliArgs []string) (exitCode, error) {
 		for _, idx := range choices {
 			url := client.NewPageURL(results[idx].Link)
 			if err := webbrowser.Open(url); err != nil {
-				return exitCodeErrWebbrowser, fmt.Errorf("failed to open the URL %s: %s", url, err)
+				return exitCodeErrWebbrowser, fmt.Errorf("failed to open the URL %s: %w", url, err)
 			}
 		}
 	}
 
 	for _, idx := range choices {
+		// nolint:forbidigo
 		fmt.Println(client.NewPageURL(results[idx].Link))
 	}
 
