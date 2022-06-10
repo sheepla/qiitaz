@@ -12,7 +12,7 @@
 ![Relase](https://github.com/sheepla/qiitaz/actions/workflows/release.yml/badge.svg)
 ![Relase](https://github.com/sheepla/qiitaz/actions/workflows/test.yml/badge.svg)
 ![Relase](https://github.com/sheepla/qiitaz/actions/workflows/golangci-lint.yml/badge.svg)
-[![Latest Release](https://img.shields.io/github/v/release/sheepla/qiitaz?style=flat-square)](https://github.com/sheepla/srss/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/sheepla/qiitaz?style=flat-square)](https://github.com/sheepla/qiitaz/releases/latest)
 
 </div>
 
