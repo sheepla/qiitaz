@@ -67,6 +67,7 @@ func Main(cliArgs []string) (exitCode, error) {
 		if flags.WroteHelp(err) {
 			return exitCodeOK, nil
 		}
+
 		return exitCodeErrArgs, nil
 	}
 
@@ -124,6 +125,7 @@ func Main(cliArgs []string) (exitCode, error) {
 		stdout := bufio.NewWriter(os.Stdout)
 		fmt.Fprintln(stdout, string(bytes))
 		stdout.Flush()
+
 		return exitCodeOK, nil
 	}
 
@@ -131,6 +133,7 @@ func Main(cliArgs []string) (exitCode, error) {
 		if err := startPreviewMode(results); err != nil {
 			return exitCodeErrPreview, fmt.Errorf("an error occurred on preview mode: %w", err)
 		}
+
 		return exitCodeOK, nil
 	}
 
@@ -168,6 +171,7 @@ func startPreviewMode(result []client.Result) error {
 				// normal termination
 				return nil
 			}
+
 			return fmt.Errorf("an error occurred on fuzzyfinder: %w", err)
 		}
 
