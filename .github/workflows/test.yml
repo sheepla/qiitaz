@@ -1,5 +1,5 @@
 ---
-name: CI
+name: test
 
 on:
   push:
@@ -27,5 +27,3 @@ jobs:
         run: go vet
       - name: Build
         run: go build
-      - name: Test
-        run: go test -cover ./...
