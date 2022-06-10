@@ -118,7 +118,7 @@ qiitaz -j QUERY...
 
 リリースページから実行可能なバイナリをダウンロードしてください。
 
-> [![Latest Release](https://img.shields.io/github/v/release/sheepla/qiitaz?style=flat-square)](https://github.com/sheepla/srss/releases/latest)
+> [![Latest Release](https://img.shields.io/github/v/release/sheepla/qiitaz?style=flat-square)](https://github.com/sheepla/qiitaz/releases/latest)
 
 ソースからビルドする場合は、このリポジトリをクローンして `go install` を実行してください。
 `v1.18.1 linux/amd64`にて開発しています。
