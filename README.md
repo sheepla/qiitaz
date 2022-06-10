@@ -1,6 +1,8 @@
 <div align="right">
 
 ![Relase](https://github.com/sheepla/qiitaz/actions/workflows/release.yml/badge.svg)
+![Relase](https://github.com/sheepla/qiitaz/actions/workflows/test.yml/badge.svg)
+![Relase](https://github.com/sheepla/qiitaz/actions/workflows/golangci-lint.yml/badge.svg)
 
 <a href="https://github.com/sheepla/qiitaz/releases/latest">
 
