@@ -3,16 +3,19 @@ package ui
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
 	lip "github.com/charmbracelet/lipgloss"
+	"github.com/sheepla/qiitaz/client"
 )
 
-const useHighPerformanceRenderer = true
+const (
+	useHighPerformanceRenderer = true
+	glamourTheme               = "dark"
+)
 
 // nolint:gochecknoglobals
 var (
@@ -126,37 +129,32 @@ func larger(a, b int) int {
 	return b
 }
 
-func Preview(url, title string) error {
-	// nolint:gosec,noctx
-	res, err := http.Get(url)
+func NewPagerProgram(path string, title string) (*tea.Program, error) {
+	body, err := client.FetchArticle(path)
 	if err != nil {
-		return fmt.Errorf("failed to fetch the article page (%s): %w", url, err)
+		return nil, fmt.Errorf("failed to fetch the article page: %w", err)
 	}
-	defer res.Body.Close()
+	defer body.Close()
 
-	body, err := io.ReadAll(res.Body)
+	bytes, err := io.ReadAll(body)
 	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	content, err := glamour.RenderBytes(body, "dark")
+	content, err := glamour.RenderBytes(bytes, glamourTheme)
 	if err != nil {
-		return fmt.Errorf("failed to render markdown: %w", err)
+		return nil, fmt.Errorf("failed to render markdown: %w", err)
 	}
 
 	pager := tea.NewProgram(
 		// nolint:exhaustivestruct,exhaustruct
 		&model{
-			content: string(content),
 			title:   title,
+			content: string(content),
 		},
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)
 
-	if err := pager.Start(); err != nil {
-		return fmt.Errorf("failed to init pager program: %w", err)
-	}
-
-	return nil
+	return pager, nil
 }

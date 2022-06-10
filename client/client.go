@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -104,6 +105,22 @@ func NewPageURL(path string) string {
 	return u.String()
 }
 
-func NewPageMarkdownURL(path string) string {
+func newPageMarkdownURL(path string) string {
 	return NewPageURL(path) + ".md"
+}
+
+func FetchArticle(path string) (io.ReadCloser, error) {
+	url := newPageMarkdownURL(path)
+	// nolint:gosec,noctx
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch the page (%s): %w", url, err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		// nolint:goerr113
+		return nil, fmt.Errorf("HTTP status error: %d %s", res.StatusCode, res.Status)
+	}
+
+	return res.Body, nil
 }

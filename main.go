@@ -171,10 +171,15 @@ func startPreviewMode(result []client.Result) error {
 			return fmt.Errorf("an error occurred on fuzzyfinder: %w", err)
 		}
 
-		url := client.NewPageMarkdownURL(result[idx].Link)
 		title := result[idx].Title
+		path := result[idx].Link
 
-		if err := ui.Preview(url, title); err != nil {
+		pager, err := ui.NewPagerProgram(path, title)
+		if err != nil {
+			return fmt.Errorf("failed to init pager program: %w", err)
+		}
+
+		if err := pager.Start(); err != nil {
 			return fmt.Errorf("an error occurred on pager: %w", err)
 		}
 	}
