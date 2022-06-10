@@ -73,6 +73,7 @@ func Main(cliArgs []string) (exitCode, error) {
 	if opts.Version {
 		// nolint:forbidigo
 		fmt.Printf("%s: v%s-%s\n", appName, appVersion, appRevision)
+
 		return exitCodeOK, nil
 	}
 
@@ -119,6 +120,7 @@ func Main(cliArgs []string) (exitCode, error) {
 		if err != nil {
 			return exitCodeErrJSON, fmt.Errorf("failed to marshalling JSON: %w", err)
 		}
+
 		stdout := bufio.NewWriter(os.Stdout)
 		fmt.Fprintln(stdout, string(bytes))
 		stdout.Flush()
@@ -168,8 +170,10 @@ func startPreviewMode(result []client.Result) error {
 			}
 			return fmt.Errorf("an error occurred on fuzzyfinder: %w", err)
 		}
+
 		url := client.NewPageMarkdownURL(result[idx].Link)
 		title := result[idx].Title
+
 		if err := ui.Preview(url, title); err != nil {
 			return fmt.Errorf("an error occurred on pager: %w", err)
 		}

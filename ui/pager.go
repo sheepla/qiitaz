@@ -14,16 +14,19 @@ import (
 
 const useHighPerformanceRenderer = true
 
+// nolint:gochecknoglobals
 var (
 	titleStyle = func() lip.Style {
 		b := lip.NormalBorder()
 		b.Right = "├"
+
 		return lip.NewStyle().BorderStyle(b).Padding(0, 1)
 	}()
 
 	infoStyle = func() lip.Style {
 		b := lip.NormalBorder()
 		b.Left = "┤"
+
 		return titleStyle.Copy().BorderStyle(b)
 	}()
 )
@@ -39,6 +42,7 @@ func (m *model) Init() tea.Cmd {
 	return nil
 }
 
+// nolint:ireturn
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var (
 		cmd  tea.Cmd
@@ -50,10 +54,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" {
 			return m, tea.Quit
 		}
+
 		if msg.String() == "g" {
 			m.viewport.GotoTop()
 			cmds = append(cmds, viewport.Sync(m.viewport))
 		}
+
 		if msg.String() == "G" {
 			m.viewport.GotoBottom()
 			cmds = append(cmds, viewport.Sync(m.viewport))
@@ -89,22 +95,26 @@ func (m *model) View() string {
 	if !m.ready {
 		return "\n  Initializing..."
 	}
+
 	return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.viewport.View(), m.footerView())
 }
 
 func (m *model) headerView() string {
 	title := titleStyle.Render(m.title)
 	line := strings.Repeat("─", larger(0, m.viewport.Width-lip.Width(title)))
+
 	return lip.JoinHorizontal(lip.Center, title, line)
 }
 
 func (m *model) footerView() string {
 	info := infoStyle.Render(scrollPercent(m.viewport.ScrollPercent()))
 	line := strings.Repeat("─", larger(0, m.viewport.Width-lip.Width(info)))
+
 	return lip.JoinHorizontal(lip.Center, line, info)
 }
 
 func scrollPercent(p float64) string {
+	// nolint:gomnd
 	return fmt.Sprintf("%3.f%%", p*100)
 }
 
@@ -112,30 +122,41 @@ func larger(a, b int) int {
 	if a > b {
 		return a
 	}
+
 	return b
 }
 
 func Preview(url, title string) error {
+	// nolint:gosec,noctx
 	res, err := http.Get(url)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to fetch the article page (%s): %w", url, err)
 	}
 	defer res.Body.Close()
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read response body: %w", err)
 	}
-	r, err := glamour.RenderBytes(body, "dark")
+
+	content, err := glamour.RenderBytes(body, "dark")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to render markdown: %w", err)
 	}
+
 	pager := tea.NewProgram(
+		// nolint:exhaustivestruct,exhaustruct
 		&model{
-			content: string(r),
+			content: string(content),
 			title:   title,
 		},
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)
-	return pager.Start()
+
+	if err := pager.Start(); err != nil {
+		return fmt.Errorf("failed to init pager program: %w", err)
+	}
+
+	return nil
 }
