@@ -11,11 +11,11 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/sheepla/qiitaz/client"
-	"github.com/sheepla/qiitaz/ui"
+	"github.com/sheepla/qiitaz/tui"
 	"github.com/toqueteos/webbrowser"
 )
 
-// nolint:gochecknoglobals
+//nolint:gochecknoglobals
 var (
 	appName     = "qiitaz"
 	appVersion  = "unknown"
@@ -25,7 +25,7 @@ var (
 
 type exitCode int
 
-// nolint:maligned
+//nolint:maligned
 type options struct {
 	Version bool   `short:"V" long:"version" description:"Show version"`
 	Sort    string `short:"s" long:"sort" description:"Sort key to search e.g. \"created\", \"like\", \"stock\", \"rel\",  (default: \"rel\")" `
@@ -54,7 +54,7 @@ func main() {
 	os.Exit(int(exitCode))
 }
 
-// nolint:funlen,golint,revive,cyclop
+//nolint:funlen,golint,cyclop
 func Main(cliArgs []string) (exitCode, error) {
 	var opts options
 	parser := flags.NewParser(&opts, flags.Default)
@@ -72,20 +72,20 @@ func Main(cliArgs []string) (exitCode, error) {
 	}
 
 	if opts.Version {
-		// nolint:forbidigo
+		//nolint:forbidigo
 		fmt.Printf("%s: v%s-%s\n", appName, appVersion, appRevision)
 
 		return exitCodeOK, nil
 	}
 
 	if len(args) == 0 {
-		// nolint:goerr113
+		//nolint:goerr113
 		return exitCodeErrArgs, errors.New("must require argument (s)")
 	}
 
 	if opts.PageNo <= 0 {
 		fmt.Fprintln(os.Stderr)
-		// nolint:goerr113
+		//nolint:goerr113
 		return exitCodeErrArgs, errors.New("the page number must be a positive value")
 	}
 
@@ -112,7 +112,7 @@ func Main(cliArgs []string) (exitCode, error) {
 	}
 
 	if len(results) == 0 {
-		// nolint:goerr113
+		//nolint:goerr113
 		return exitCodeOK, errors.New("no results found")
 	}
 
@@ -137,7 +137,7 @@ func Main(cliArgs []string) (exitCode, error) {
 		return exitCodeOK, nil
 	}
 
-	choices, err := ui.FindMulti(results)
+	choices, err := tui.FindMulti(results)
 	if err != nil {
 		return exitCodeErrFuzzyFinder, fmt.Errorf("an error occurred on fuzzyfinder: %w", err)
 	}
@@ -156,7 +156,7 @@ func Main(cliArgs []string) (exitCode, error) {
 	}
 
 	for _, idx := range choices {
-		// nolint:forbidigo
+		//nolint:forbidigo
 		fmt.Println(client.NewPageURL(results[idx].Link))
 	}
 
@@ -165,7 +165,7 @@ func Main(cliArgs []string) (exitCode, error) {
 
 func startPreviewMode(result []client.Result) error {
 	for {
-		idx, err := ui.Find(result)
+		idx, err := tui.Find(result)
 		if err != nil {
 			if errors.Is(fuzzyfinder.ErrAbort, err) {
 				// normal termination
@@ -178,7 +178,7 @@ func startPreviewMode(result []client.Result) error {
 		title := result[idx].Title
 		path := result[idx].Link
 
-		pager, err := ui.NewPagerProgram(path, title)
+		pager, err := tui.NewPagerProgram(path, title)
 		if err != nil {
 			return fmt.Errorf("failed to init pager program: %w", err)
 		}
