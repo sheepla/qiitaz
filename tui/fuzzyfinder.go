@@ -48,8 +48,7 @@ func Find(result []client.Result) (int, error) {
 }
 
 func renderPreviewWindow(result *client.Result) string {
-	return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
-		result.Header,
+	return fmt.Sprintf("%s\n\n%s\n\n%s",
 		result.Title,
 		result.Snippet,
 		strings.Join(result.Tags, " "),

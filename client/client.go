@@ -11,7 +11,6 @@ import (
 )
 
 type Result struct {
-	Header  string   `json:"header"`
 	Title   string   `json:"title"`
 	Link    string   `json:"link"`
 	Snippet string   `json:"snippet"`
@@ -78,14 +77,12 @@ func Search(url string) ([]Result, error) {
 		result  Result
 	)
 
-	doc.Find("div.searchResult_main").Each(func(i int, div *goquery.Selection) {
-		result.Header = div.Find("div.searchResult_header").Text()
-		t := div.Find("h1.searchResult_itemTitle a")
-		result.Title = t.Text()
-		result.Link = t.AttrOr("href", "")
-		result.Snippet = div.Find("div.searchResult_snippet").Text()
-		result.Tags = nil
-		div.Find("li.tagList_item a").Each(func(i int, a *goquery.Selection) {
+	doc.Find("article").Each(func(i int, article *goquery.Selection) {
+		result.Title = article.Find("h3").Text()
+		result.Link = article.Find("a").First().AttrOr("href", "")
+		result.Snippet = article.Find("p").Text()
+
+		article.Find("li").Each(func(i int, a *goquery.Selection) {
 			result.Tags = append(result.Tags, a.Text())
 		})
 		results = append(results, result)
